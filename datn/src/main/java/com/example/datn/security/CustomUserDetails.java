@@ -18,7 +18,13 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // Lấy TenVaiTro (VD: ADMIN, EMPLOYEE, CUSTOMER)
+        if (user.getVaiTro() == null) {
+            return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        }
         String role = user.getVaiTro().getTenVaiTro();
+        if (role == null || role.trim().isEmpty()) {
+            return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        }
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
     }
 

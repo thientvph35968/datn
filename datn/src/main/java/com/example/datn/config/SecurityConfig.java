@@ -21,11 +21,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Cho phép truy cập công khai
                         .requestMatchers("/login", "/dangki", "/quenmatkhau", "/css/**", "/js/**", "/images/**", "/error").permitAll()
-                        .requestMatchers("/", "/home").permitAll()
+                        .requestMatchers("/", "/home", "/collections/**").permitAll()
                         // Phân quyền theo Role
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/employee/**").hasRole("EMPLOYEE")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll() // Tạm thời cho phép tất cả
                 )
                 // 2. Cấu hình form đăng nhập
                 .formLogin(form -> form

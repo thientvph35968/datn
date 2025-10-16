@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tạo Hóa Đơn (POS) - Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <style>
+    /* ==================================== CSS BẮT ĐẦU ==================================== */
+
+    /* Thiết lập biến màu sắc */
+    :root {
+      --sidebar-bg: #273041;
+      --sidebar-item-text: #b8c1d5;
+      --sidebar-item-hover: #3c4659;
+      --sidebar-active-bg: #404961;
+      --main-bg: #f4f7f9;
+      --primary-color: #007bff;
+      --page-title-color: #5d677a;
+
+      /* Màu POS ĐẸP HƠN */
+      --pos-main-bg: #f0f2f5;
+      --pos-panel-bg: #ffffff;
+      --pos-border-color: #e0e0e0;
+      --pos-header-bg: #f8f9fa;
+      --pos-header-text: #343a40;
+
+      --pos-pay-button: #28a745;
+      --pos-pay-button-hover: #218838;
+
+      --pos-action-button-bg: #6c757d;
+      --pos-action-button-hover: #5a6268;
+
+      --pos-edit-button-bg: #007bff;
+      --pos-edit-button-hover: #0056b3;
+      --pos-delete-button-bg: #dc3545;
+      --pos-delete-button-hover: #c82333;
+
+      --text-color-dark: #343a40;
+      --text-color-medium: #6c757d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body {
+      background-color: var(--main-bg);
+      display: flex;
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    .dashboard-container {
+      display: flex;
+      width: 100%;
+    }
+
+    /* ==================================== SIDEBAR ==================================== */
+    .sidebar {
+      width: 250px;
+      background-color: var(--sidebar-bg);
+      color: var(--sidebar-item-text);
+      padding: 10px 0;
+      flex-shrink: 0;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      transition: width 0.3s, margin-left 0.3s;
+    }
+
+    .logo-area {
+      padding: 10px 20px;
+      margin-bottom: 20px;
+    }
+    .logo-img {
+      width: 100%;
+      max-width: 150px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .components-label {
+      color: #6c757d;
+      padding: 10px 20px 5px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .sidebar-nav ul {
+      list-style: none;
+    }
+
+    .nav-item, .sub-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .nav-item i, .sub-item i {
+      margin-right: 15px;
+      width: 15px;
+      text-align: center;
+    }
+    .nav-item:hover, .sub-item:hover {
+      background-color: var(--sidebar-item-hover);
+    }
+    .nav-item.active {
+      background-color: #594d8c;
+      color: #fff;
+      font-weight: 600;
+      border-left: 3px solid #6b5c9b;
+      padding-left: 17px;
+    }
+    .nav-item.selected-parent {
+      background-color: var(--sidebar-active-bg);
+      color: #fff;
+    }
+    .sub-item {
+      padding-left: 50px;
+      font-size: 0.85rem;
+    }
+    .sub-item i {
+      font-size: 0.6rem;
+      color: var(--sidebar-item-text);
+    }
+    .sub-item:nth-child(3).current-page {
+      background-color: var(--sidebar-item-hover);
+      color: #fff;
+    }
+
+    /* ==================================== MAIN CONTENT (POS Layout) ==================================== */
+    .main-content {
+      flex-grow: 1;
+      padding: 0;
+    }
+
+    .main-header {
+      display: none;
+    }
+
+    .pos-container {
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+      gap: 15px;
+      padding: 15px;
+      height: calc(100vh - 0px);
+      background-color: var(--pos-main-bg);
+    }
+
+    .main-panel {
+      display: grid;
+      grid-template-rows: 200px 1fr 1fr;
+      gap: 15px;
+    }
+
+    .side-panel {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 15px;
+    }
+
+    /* Box chung cho các khu vực */
+    .pos-box {
+      background-color: var(--pos-panel-bg);
+      border: 1px solid var(--pos-border-color);
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Tiêu đề Box */
+    .pos-box h4 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--pos-border-color);
+      color: var(--text-color-dark);
+    }
+
+    /* Khu vực Hóa đơn */
+    .invoice-header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .invoice-header-actions span {
+      font-weight: bold;
+      color: var(--text-color-dark);
+      font-size: 1.1rem;
+    }
+    .btn-create-invoice {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+    .btn-create-invoice:hover {
+      background-color: #0056b3;
+    }
+
+    /* Bảng chung trong POS */
+    .pos-table-wrapper {
+      flex-grow: 1;
+      overflow-y: auto;
+      margin-top: 5px;
+    }
+    .pos-table-wrapper table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .pos-table-wrapper th, .pos-table-wrapper td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--pos-border-color);
+      text-align: left;
+    }
+    .pos-table-wrapper thead th {
+      background-color: var(--pos-header-bg);
+      font-weight: 600;
+      color: var(--pos-header-text);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .pos-table-wrapper tbody tr:hover {
+      background-color: #f0f0f0;
+      cursor: pointer;
+    }
+
+    /* Khu vực Hóa đơn chi tiết */
+    .invoice-detail-box h4 {
+      margin-bottom: 5px;
+    }
+    .invoice-detail-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding-top: 10px;
+      margin-top: auto;
+      border-top: 1px solid var(--pos-border-color);
+    }
+    .invoice-detail-actions button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: white;
+      transition: background-color 0.2s;
+    }
+    .invoice-detail-actions button:nth-child(1) {
+      background-color: var(--pos-edit-button-bg);
+    }
+    .invoice-detail-actions button:nth-child(1):hover {
+      background-color: var(--pos-edit-button-hover);
+    }
+    .invoice-detail-actions button:nth-child(2),
+    .invoice-detail-actions button:nth-child(3) {
+      background-color: var(--pos-delete-button-bg);
+    }
+    .invoice-detail-actions button:nth-child(2):hover,
+    .invoice-detail-actions button:nth-child(3):hover {
+      background-color: var(--pos-delete-button-hover);
+    }
+
+
+    /* Khu vực Danh sách sản phẩm */
+    .product-search {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+    .product-search label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-color-dark);
+    }
+    .product-search input {
+      flex-grow: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--pos-border-color);
+      border-radius: 5px;
+      font-size: 0.9rem;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    .product-search input:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05), 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    /* Cột Phải - Thông tin */
+    .info-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .info-group label {
+      width: 110px;
+      min-width: 90px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-right: 10px;
+      color: var(--text-color-dark);
+    }
+    .info-group input {
+      flex-grow: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--pos-border-color);
+      border-radius: 5px;
+      font-size: 0.9rem;
+      background-color: #fdfdfd;
+    }
+    .info-group input:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    .info-group input[readonly] {
+      background-color: var(--pos-header-bg);
+      color: var(--text-color-medium);
+    }
+
+    .btn-side {
+      padding: 8px 12px;
+      background-color: var(--pos-action-button-bg);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 8px;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+    }
+    .btn-side:hover {
+      background-color: var(--pos-action-button-hover);
+    }
+    .info-section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: var(--text-color-dark);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--pos-border-color);
+    }
+
+    /* Khu vực Thanh toán */
+    .payment-area {
+      background-color: var(--pos-panel-bg);
+      border: 1px solid var(--pos-border-color);
+      border-radius: 8px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    }
+    .payment-area .info-group label {
+      width: 120px;
+      font-size: 1rem;
+    }
+    .payment-area .info-group input {
+      background-color: #e6f7ff;
+      font-weight: 700;
+      text-align: right;
+      color: var(--text-color-dark);
+      font-size: 1.1rem;
+      padding: 10px;
+    }
+    .payment-area .info-group:last-child input {
+      color: #dc3545;
+    }
+
+    .btn-pay {
+      background-color: var(--pos-pay-button);
+      color: white;
+      border: none;
+      padding: 25px 15px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      margin-top: auto;
+      box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+    }
+    .btn-pay:hover {
+      background-color: var(--pos-pay-button-hover);
+      transform: translateY(-2px);
+    }
+    .btn-pay:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 5px rgba(40, 167, 69, 0.4);
+    }
+
+
+    /* ==================================== RESPONSIVE DESIGN ==================================== */
+    @media (max-width: 1200px) {
+      .pos-container {
+        grid-template-columns: 2.5fr 1.5fr;
+        gap: 10px;
+        padding: 10px;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .pos-container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .main-panel {
+        grid-template-rows: auto;
+      }
+      .main-panel > .pos-box {
+        min-height: 200px;
+      }
+      .side-panel {
+        order: -1;
+      }
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 0;
+        margin-left: -250px;
+        position: absolute;
+        height: 100%;
+        z-index: 1000;
+      }
+      .menu-toggle {
+        display: block;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        color: var(--sidebar-bg);
+        background-color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        font-size: 1.5rem;
+        cursor: pointer;
+        z-index: 1001;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+
+  <aside class="sidebar">
+    <div class="logo-area">
+      <div class="logo-text">
+        <img src="PL.jpg" alt="Logo" class="logo-img">
+      </div>
+    </div>
+
+    <i class="fas fa-bars menu-toggle"></i>
+
+    <div class="components-label">COMPONENTS</div>
+
+    <nav class="sidebar-nav">
+      <ul>
+        <li class="nav-item active">
+          <i class="fas fa-home"></i>
+          <span>Trang Chủ</span>
+        </li>
+        <li class="nav-item selected-parent">
+          <i class="fas fa-list-ul"></i>
+          <span>Danh sách quản lý</span>
+        </li>
+        <li class="sub-item current-page">
+          <a th:href="@{/quanlybanhang}" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="far fa-circle"></i>
+            <span>Quản lý bán hàng</span> </a>
+        </li>
+        <li class="sub-item">
+          <a th:href="@{/quanlysanpham}" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="far fa-circle"></i>
+            <span>Quản lý sản phẩm</span>
+          </a>
+        </li>
+
+        <li class="sub-item">
+          <a th:href="@{/quanlydanhmuc}" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="far fa-circle"></i>
+            <span>Quản lý danh mục</span>
+          </a>
+        </li>
+
+        <li class="sub-item">
+          <a th:href="@{/quanlynguoidung}" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="far fa-circle"></i>
+            <span>Quản lý người dùng</span>
+          </a>
+        </li>
+
+        <li class="sub-item">
+          <a th:href="@{/quanlythuonghieu}" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="far fa-circle"></i>
+            <span>Quản lý thương hiệu</span>
+          </a>
+        </li>
+
+        <li class="sub-item">
+          <a th:href="@{/quanlymagiam}" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="far fa-circle"></i>
+            <span>Quản lý mã giảm</span>
+          </a>
+        </li>
+
+        <li class="sub-item">
+          <a th:href="@{/quanlyhoadon}" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="far fa-circle"></i>
+            <span>Quản lý hóa đơn</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <section class="pos-container">
+
+      <div class="main-panel">
+
+        <div class="pos-box invoice-list-box">
+          <div class="invoice-header-actions">
+            <span>Hóa đơn</span>
+            <button class="btn-create-invoice">Tạo hóa đơn</button>
+          </div>
+          <div class="pos-table-wrapper">
+            <table>
+              <thead>
+              <tr>
+                <th>STT</th>
+                <th>Mã HĐ</th>
+                <th>Mã nhân viên</th>
+                <th>Tên khách hàng</th>
+                <th>Ngày tạo</th>
+                <th>Trạng thái</th>
+              </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pos-box invoice-detail-box">
+          <h4>Hóa đơn chi tiết</h4>
+          <div class="pos-table-wrapper">
+            <table>
+              <thead>
+              <tr>
+                <th>STT</th>
+                <th>Mã SPCT</th>
+                <th>Tên SP</th>
+                <th>Số lượng</th>
+                <th>Đơn giá</th>
+              </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+          <div class="invoice-detail-actions">
+            <button>Sửa</button>
+            <button>Xóa</button>
+            <button>Xóa hết</button>
+          </div>
+        </div>
+
+        <div class="pos-box product-list-box">
+          <div class="product-search">
+            <label>Tìm kiếm</label>
+            <input type="text" placeholder="Nhập mã/tên sản phẩm...">
+          </div>
+          <div class="pos-table-wrapper">
+            <table>
+              <thead>
+              <tr>
+                <th>STT</th>
+                <th>Mã SPCT</th>
+                <th>Tên sản phẩm</th>
+                <th>Giá bán</th>
+                <th>Số lượng</th>
+                <th>Màu sắc</th>
+                <th>Kích thước</th>
+                <th>Chất liệu</th>
+                <th>Trạng thái</th>
+              </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="side-panel">
+
+        <div class="pos-box customer-info-box">
+          <h4 class="info-section-title">Thông tin khách hàng</h4>
+          <div class="info-group">
+            <label for="sdt-kh">SĐT KH:</label>
+            <input type="text" id="sdt-kh" placeholder="Nhập SĐT khách hàng">
+          </div>
+          <div class="info-group">
+            <label for="ten-kh">Tên KH:</label>
+            <input type="text" id="ten-kh" placeholder="Tên khách hàng">
+            <button class="btn-side">Chọn</button>
+          </div>
+        </div>
+
+        <div class="pos-box invoice-info-box">
+          <h4 class="info-section-title">Thông tin hóa đơn</h4>
+          <div class="info-group">
+            <label>Mã hóa đơn</label>
+            <input type="text" value="" readonly> </div>
+          <div class="info-group">
+            <label>Tên nhân viên</label>
+            <input type="text" value="" readonly> </div>
+          <div class="info-group">
+            <label>Tổng tiền</label>
+            <input type="text" value="0" readonly> </div>
+          <div class="info-group">
+            <label>Tiền khách đưa</label>
+            <input type="text" value="" placeholder="Nhập số tiền khách đưa">
+          </div>
+          <div class="info-group">
+            <label>Tiền thừa</label>
+            <input type="text" value="0" readonly> </div>
+        </div>
+
+        <div class="payment-area">
+          <button class="btn-pay">Thanh toán</button>
+        </div>
+
+      </div>
+
+    </section>
+  </main>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+
+    if (menuToggle && sidebar) {
+      menuToggle.addEventListener('click', function() {
+        const isHidden = sidebar.style.marginLeft === '-250px' || sidebar.style.marginLeft === '';
+
+        if (window.innerWidth <= 768) {
+          sidebar.style.marginLeft = isHidden ? '0' : '-250px';
+        }
+      });
+    }
+  });
+</script>
+
+</body>
+</html>

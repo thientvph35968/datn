@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>PL jacket</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        /* --- CSS CHO FOOTER (MỚI) --- */
+        .main-footer {
+            background-color: #000; /* Nền đen */
+            color: #fff; /* Chữ trắng mặc định */
+        }
+
+        .main-footer .text-white a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .main-footer .text-white a:hover {
+            color: #bbb; /* Hiệu ứng hover cho link */
+        }
+
+        .main-footer .footer-links li {
+            margin-bottom: 5px;
+        }
+
+        .main-footer .hashtag {
+            color: #dc3545; /* Màu đỏ cho hashtag */
+        }
+
+        .main-footer .row:first-child i {
+            color: #fff;
+        }
+        .main-footer .row:first-child p.fw-bold {
+            color: #fff;
+        }
+        .main-footer .text-muted {
+            color: #aaa !important;
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        header.top-bar {
+            background-color: #0a2a6c;
+            color: white;
+            font-size: 14px;
+            padding: 8px 0;
+        }
+
+        .navbar {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .navbar .nav-link {
+            color: #333;
+        }
+
+        .navbar .nav-link.active {
+            font-weight: bold;
+        }
+
+        /* --- HERO BANNER CHUẨN KÍCH THƯỚC --- */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            background: url('/hero-banner.jpg') center center/cover no-repeat;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 30px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1;
+        }
+
+        .hero h1 {
+            position: relative;
+            z-index: 2;
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                height: 220px;
+                border-radius: 8px;
+            }
+            .hero h1 {
+                font-size: 28px;
+            }
+        }
+
+        .product-section {
+            padding: 40px 0;
+        }
+
+        .product-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 16px;
+        }
+
+        .product-info .name {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .product-info .price {
+            color: #c00;
+            font-weight: bold;
+        }
+
+        .product-info .old-price {
+            text-decoration: line-through;
+            color: #888;
+            margin-left: 8px;
+        }
+
+        footer {
+            background: #f8f9fa;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        .color-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 5px;
+            cursor: pointer;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.1s ease;
+        }
+
+        /* --- MENU DROPDOWN --- */
+        @media (min-width: 992px) {
+            .mega-menu {
+                display: block;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease, visibility 0.3s ease;
+            }
+
+            .static-dropdown:hover .mega-menu {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .dropdown-toggle::after {
+                display: none;
+            }
+        }
+
+        .nav-item.dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0;
+        }
+
+        .nav-item.dropdown .dropdown-menu {
+            display: none;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .nav-item.dropdown:hover .dropdown-menu {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-item.dropdown > a::after {
+            display: none !important;
+        }
+    </style>
+
+</head>
+<body>
+
+<!-- Thanh trên cùng -->
+<header class="top-bar text-center">
+    Miễn phí vận chuyển đơn hàng trên 1 triệu | Hotline: 18000 888 38
+</header>
+
+<!-- Thanh menu -->
+<nav class="navbar navbar-expand-lg bg-white">
+    <div class="container">
+        <a class="navbar-brand fw-bold fs-3" href="/"> Coatify</a>
+
+        <form class="d-flex me-4 d-none d-lg-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Tìm kiếm sản phẩm..." aria-label="Search" style="width: 250px;">
+            <button class="btn btn-outline-dark" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Trang chủ</a></li>
+
+                <li class="nav-item dropdown static-dropdown">
+                    <a class="nav-link dropdown-toggle" href="/collections/new" id="newProductsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Sản phẩm mới
+                    </a>
+                    <div class="dropdown-menu mega-menu" aria-labelledby="newProductsDropdown">
+                        <div class="container-fluid">
+                            <div class="row justify-content-start">
+
+                                <div class="col-md-3">
+                                    <a class="dropdown-item" href="/collections/aokhoacparka">Áo Khoác Parka</a>
+                                    <a class="dropdown-item" href="/collections/aokhoacsomi">Áo Khoác Sơ Mi</a>
+                                    <a class="dropdown-item" href="/collections/aokhoacjean">Áo Khoác Jean</a>
+                                    <a class="dropdown-item" href="/collections/aokhoackaki">Áo Khoác Kaki</a>
+                                    <a class="dropdown-item" href="/collections/aokhoacdu">Áo Khoác Dù</a>
+                                    <a class="dropdown-item" href="/collections/aokhoacbomber">Áo Khoác Bomber</a>
+                                    <a class="dropdown-item" href="/collections/aokhoachoodie">Áo Khoác Hoodie</a>
+                                    <a class="dropdown-item" href="/collections/aokhoacthethao">Áo Khoác Thể Thao</a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="nav-item dropdown static-dropdown">
+                    <a class="nav-link dropdown-toggle" href="/collections/thuonghieu">Thương hiệu</a>
+                    <div class="dropdown-menu mega-menu">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-12">
+                                    <a class="dropdown-item" href="/collections/nike">Nike</a>
+                                    <a class="dropdown-item" href="/collections/adidas">Adidas</a>
+                                    <!-- bạn có thể thêm thương hiệu khác ở đây -->
+                                    <!-- <a class="dropdown-item" href="/collections/puma">Puma</a> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item"><a class="nav-link active me-3" href="/collections/giamgia">SALE</a></li>
+
+                <a class="nav-link p-0" th:href="@{/login}">
+                    <i class="bi bi-person fs-5 text-dark"></i>
+                </a>
+
+
+                <li class="nav-item">
+                    <a class="nav-link p-0 position-relative" th:href="@{/giohang}">
+                        <i class="bi bi-bag-fill fs-5 text-dark"></i>
+                        <span class="cart-badge">0</span>
+                    </a>
+                </li>
+            </ul>
+
+            <form class="d-flex mt-2 d-lg-none" role="search">
+                <input class="form-control me-2" type="search" placeholder="Tìm kiếm sản phẩm..." aria-label="Search">
+                <button class="btn btn-outline-dark" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+
+        </div>
+    </div>
+</nav>
+<!-- Hero banner -->
+<section class="hero">
+    <h1></h1>
+</section>
+
+<!-- Phần giới thiệu & danh mục -->
+<div class="container text-center my-5">
+    <p>Các dòng áo khoác nam nổi bật</p>
+    <a href="/collections/khampha" class="btn btn-primary">Khám phá ngay</a>
+</div>
+
+<!-- Sản phẩm nổi bật (sale) -->
+<section class="product-section">
+    <div class="container">
+        <h2 class="mb-4 text-center">Sản phẩm SALE nổi bật</h2>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="filter-panel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0 filter-title">
+                            <i class="bi bi-funnel-fill me-2"></i> Bộ lọc
+                        </h4>
+                        <a href="#" class="text-decoration-none small">Xóa lọc</a>
+                    </div>
+
+                    <div class="filter-group mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="filter-heading">Giảm giá</strong>
+                            <i class="bi bi-chevron-up"></i>
+                        </div>
+                        <div class="btn-group w-100" role="group" aria-label="Lọc giảm giá">
+                            <button type="button" class="btn btn-light filter-btn me-2 active">0-10%</button>
+                            <button type="button" class="btn btn-light filter-btn me-2">10%-50%</button>
+                            <button type="button" class="btn btn-danger filter-btn-active">50%-80%</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-group mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="filter-heading">Giá tiền</strong>
+                            <i class="bi bi-chevron-up"></i>
+                        </div>
+                        <div class="btn-group w-100" role="group" aria-label="Lọc giá tiền">
+                            <button type="button" class="btn btn-light filter-btn me-2 active">0-100k</button>
+                            <button type="button" class="btn btn-light filter-btn me-2">100-500k</button>
+                            <button type="button" class="btn btn-light filter-btn">500k-1000k</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-group mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="filter-heading">Màu sắc</strong>
+                            <i class="bi bi-chevron-up"></i>
+                        </div>
+                        <div class="d-flex flex-wrap color-options">
+                            <div class="color-circle border" style="background-color: #ffffff;" title="Trắng"></div>
+                            <div class="color-circle" style="background-color: #ffeb3b;" title="Vàng"></div>
+                            <div class="color-circle" style="background-color: #ff9800;" title="Cam"></div>
+                            <div class="color-circle" style="background-color: #f44336;" title="Đỏ"></div>
+                            <div class="color-circle" style="background-color: #9c27b0;" title="Tím"></div>
+                            <div class="color-circle" style="background-color: #8bc34a;" title="Xanh lá"></div>
+                            <div class="color-circle" style="background-color: #e3d0b8;" title="Be"></div>
+                            <div class="color-circle" style="background-color: #000000;" title="Đen"></div>
+                            <div class="color-circle" style="background-color: #546e7a;" title="Xám đậm"></div>
+                            <div class="color-circle" style="background-color: #795548;" title="Nâu"></div>
+                            <div class="color-circle" style="background-color: #bdbdbd;" title="Xám nhạt"></div>
+                            <div class="color-circle" style="background-color: #fce4ec;" title="Hồng nhạt"></div>
+                        </div>
+                    </div>
+                    <div class="filter-group mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="filter-heading">Kích thước</strong>
+                            <i class="bi bi-chevron-up"></i>
+                        </div>
+                        <div class="d-flex flex-wrap size-options">
+                            <button type="button" class="btn btn-light size-btn">S</button>
+                            <button type="button" class="btn btn-light size-btn">M</button>
+                            <button type="button" class="btn btn-light size-btn">L</button>
+
+                            <button type="button" class="btn btn-light size-btn">XL</button>
+                            <button type="button" class="btn btn-light size-btn">2XL</button>
+                            <button type="button" class="btn btn-light size-btn">3XL</button>
+
+                            <button type="button" class="btn btn-light size-btn">4XL</button>
+                </div>
+            </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="row g-4">
+                    <div class="col-md-4" th:each="product : ${saleProducts}">
+                        <div class="product-card">
+                            <img th:src="@{${product.imageUrl}}" alt="Product Image" class="product-img"/>
+                            <div class="product-info">
+                                <div class="name" th:text="${product.name}">Tên sản phẩm</div>
+                                <div>
+                                    <span class="price text-danger fw-bold" th:text="${product.salePrice}">1.000.000₫</span>
+                                    <span class="old-price text-muted text-decoration-line-through" th:text="${product.originalPrice}">2.000.000₫</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+<!-- Footer -->
+<footer class="main-footer mt-5 pt-5 pb-4">
+    <div class="container">
+        <div class="row text-center border-bottom pb-4 mb-5 text-white">
+            <div class="col-md-3 mb-3">
+                <i class="bi bi-truck fs-4 me-2"></i>
+                <p class="fw-bold mb-1">MIỄN PHÍ SHIP</p>
+                <p class="small text-muted">Toàn quốc</p>
+            </div>
+            <div class="col-md-3 mb-3">
+                <i class="bi bi-ticket-perforator fs-4 me-2"></i>
+                <p class="fw-bold mb-1">VOUCHER 20%</p>
+                <p class="small text-muted">Cho khách mới</p>
+            </div>
+            <div class="col-md-3 mb-3">
+                <i class="bi bi-shield-check fs-4 me-2"></i>
+                <p class="fw-bold mb-1">BẢO HÀNH</p>
+                <p class="small text-muted">365 ngày</p>
+            </div>
+            <div class="col-md-3 mb-3">
+                <i class="bi bi-geo-alt fs-4 me-2"></i>
+                <p class="fw-bold mb-1">ĐỊA CHỈ</p>
+                <p class="small text-muted">Cửa hàng PL Jacket VN</p>
+            </div>
+        </div>
+
+        <div class="row text-white">
+            <div class="col-md-2 col-6 mb-4">
+                <p class="fw-bold text-uppercase mb-3">Mua Sắm</p>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="#">Áo Thun</a></li>
+                    <li><a href="#">Áo Khoác</a></li>
+                    <li><a href="#">Áo Sơ Mi</a></li>
+                    <li><a href="#">Quần Dài</a></li>
+                    <li><a href="#">Quần Short</a></li>
+                    <li><a href="#">SITEMAP</a></li>
+                    <li><a href="#">VIP</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-3 col-6 mb-4">
+                <p class="fw-bold text-uppercase mb-3">Phân loại sản phẩm</p>
+                <ul class="list-unstyled footer-links">
+                    <li class="fw-bold mb-1 mt-2">GU ĐƠN GIẢN</li>
+                    <li><a href="#">Thời trang công sở</a></li>
+                    <li><a href="#">Phong cách Basic</a></li>
+                    <li class="fw-bold mb-1 mt-2">GU THIẾT KẾ</li>
+                    <li><a href="#">Sản phẩm cao cấp</a></li>
+                    <li><a href="#">Đồ cặp đôi</a></li>
+                    <li class="fw-bold mb-1 mt-2">GU THỂ THAO</li>
+                </ul>
+            </div>
+
+            <div class="col-md-2 col-6 mb-4">
+                <p class="fw-bold text-uppercase mb-3">Về PL Jacket</p>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="#">Giới Thiệu</a></li>
+                    <li><a href="#">Cửa Hàng</a></li>
+                    <li><a href="#">Bảo Hành</a></li>
+                    <li><a href="#">Đổi Trả</a></li>
+                    <li><a href="#">Vận Chuyển</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-5 mb-4">
+                <p class="fw-bold text-uppercase mb-3">Gia nhập cộng đồng PLJacket</p>
+                <p class="text-muted small">
+                    Nơi bạn tìm thấy cảm hứng thời trang và khám phá những món đồ đúng Gu của mình.
+                </p>
+                <div class="d-flex mb-3">
+                    <input type="email" class="form-control me-2" placeholder="Nhập email của bạn" style="max-width: 250px;">
+                    <button class="btn btn-secondary">Đăng ký</button>
+                </div>
+
+                <div class="social-icons mb-3">
+                    <a href="#" class="text-white me-3"><i class="bi bi-facebook fs-5"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-youtube fs-5"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-tiktok fs-5"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-instagram fs-5"></i></a>
+                </div>
+                <p class="fw-bold hashtag">#PLJacket #ThờiTrangTốiGiản</p>
+            </div>
+        </div>
+
+        <div class="row border-top pt-4 mt-4">
+            <div class="col-12 text-center text-muted small">
+                <p class="mb-1">Mã số ĐKKD: 0305193405-007 – Đăng ký lần đầu: 05/02/2024. Cơ quan cấp: UBND Quận 10 – Phòng Tài chính – Kế hoạch.</p>
+                <p class="mb-1">Địa chỉ: 766/28 Sư Vạn Hạnh (Nối dài), P. 12, Q. 10, TP. HCM. Điện thoại: (028) 7307 4441. Email: cskh@pljacket.com</p>
+                <p class="mt-3">© 2025 PL JACKET VN. ALL RIGHTS RESERVED.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

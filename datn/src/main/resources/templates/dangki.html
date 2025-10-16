@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Đăng Ký</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* Thiết lập cơ bản */
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    /* Container chính của form */
+    .registration-form-container {
+      max-width: 450px;
+      width: 100%;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+    }
+
+    .registration-form-container h1 {
+      font-size: 24px;
+      color: #333;
+      margin-top: 0;
+      margin-bottom: 20px;
+      text-align: center; /* Căn giữa tiêu đề */
+    }
+
+    /* Nhóm input */
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    /* Kiểu dáng cho tất cả các ô input trong form */
+    .registration-form-container input[type="text"],
+    .registration-form-container input[type="tel"],
+    .registration-form-container input[type="email"],
+    .registration-form-container input[type="password"] {
+      width: 100%;
+      padding: 12px 10px;
+      border: 1px solid #ccc;
+      border-radius: 0;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    /* Làm nổi bật ô input khi focus */
+    .registration-form-container input:focus {
+      border-color: #666;
+      outline: none;
+    }
+
+    /* ************************************************* */
+    /* PHẦN ĐÃ CHỈNH SỬA CHO CĂN GIỮA VÀ CÁCH ĐỀU */
+    /* ************************************************* */
+    .action-group {
+      display: flex;
+      /* THAY ĐỔI: Căn giữa các phần tử trong container */
+      justify-content: center;
+      align-items: center;
+      margin-top: 5px; /* Điều chỉnh khoảng cách trên */
+      margin-bottom: 20px;
+      width: 100%;
+      /* CÁCH 1: Dùng thuộc tính gap (Hiện đại và gọn gàng hơn) */
+      gap: 20px; /* Khoảng cách 20px giữa hai nút */
+
+      /* CÁCH 2: Nếu không dùng gap, bạn dùng margin-right cho nút đầu tiên */
+      /* Nếu không dùng gap, hãy dùng: .register-button { margin-right: 20px; } */
+    }
+
+    /* CSS cho nút Đăng ký (bên trái) */
+    .register-button {
+      padding: 12px 30px;
+      background-color: #ff8800;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background-color 0.3s;
+    }
+
+    .register-button:hover {
+      background-color: #e67d00;
+    }
+
+    /* CSS cho nút Trở về (bên phải) */
+    .login-link {
+      display: block;
+      padding: 12px 30px;
+      background-color: #ff8800;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 500;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      text-transform: uppercase;
+      text-decoration: none;
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+
+    .login-link:hover {
+      background-color: #e67d00;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+<div class="registration-form-container">
+  <form>
+    <h1>Đăng kí</h1>
+    <div class="input-group">
+      <input type="text" id="fullname" name="fullname" placeholder="Họ tên" required>
+    </div>
+
+    <div class="input-group">
+      <input type="tel" id="phone" name="phone" placeholder="Điện thoại" required>
+    </div>
+
+    <div class="input-group">
+      <input type="email" id="email" name="email" placeholder="Email" required>
+    </div>
+
+    <div class="input-group">
+      <input type="password" id="password" name="password" placeholder="Mật khẩu của bạn" required>
+    </div>
+
+    <div class="action-group">
+      <button type="submit" class="register-button">ĐĂNG KÝ</button>
+      <a href="/login" class="login-link">Trở về</a>
+    </div>
+  </form>
+</div>
+</body>
+</html>

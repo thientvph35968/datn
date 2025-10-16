@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Thương Hiệu - Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <style>
+    /* ==================================== CSS BẮT ĐẦU ==================================== */
+
+    /* Thiết lập biến màu sắc */
+    :root {
+      --sidebar-bg: #273041;
+      --sidebar-item-text: #b8c1d5;
+      --sidebar-item-hover: #3c4659;
+      --sidebar-active-bg: #404961; /* Nền mục đang chọn (Danh sách quản lý) */
+      --main-bg: #f4f7f9;
+      --card-bg: #ffffff;
+      --primary-color: #007bff; /* Xanh dương cho nút Tìm kiếm */
+      --page-title-color: #5d677a; /* Màu tiêu đề lớn */
+
+      /* Màu trạng thái */
+      --status-active-bg: #28a745; /* Hoạt động */
+      --status-inactive-bg: #dc3545; /* Không hoạt động */
+      --status-text-light: #fff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body {
+      background-color: var(--main-bg);
+      display: flex;
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    .dashboard-container {
+      display: flex;
+      width: 100%;
+    }
+
+    /* ==================================== SIDEBAR ==================================== */
+    .sidebar {
+      width: 250px;
+      background-color: var(--sidebar-bg);
+      color: var(--sidebar-item-text);
+      padding: 10px 0;
+      flex-shrink: 0;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      transition: width 0.3s, margin-left 0.3s;
+    }
+
+    .logo-area {
+      padding: 10px 20px;
+      margin-bottom: 20px;
+    }
+
+    /* Style cho Logo Text "HEALTHY" */
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .logo-h {
+      color: #4CAF50; /* Màu xanh lá cho chữ H */
+      font-size: 2rem;
+    }
+
+    .menu-toggle {
+      display: none;
+    }
+
+    .components-label {
+      color: #6c757d;
+      padding: 10px 20px 5px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .sidebar-nav ul {
+      list-style: none;
+    }
+
+    .nav-item, .sub-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .nav-item i, .sub-item i {
+      margin-right: 15px;
+      width: 15px;
+      text-align: center;
+    }
+
+    /* Hover effect */
+    .nav-item:hover, .sub-item:hover {
+      background-color: var(--sidebar-item-hover);
+    }
+
+    /* Mục "Trang Chủ" màu tím đậm */
+    .nav-item.active {
+      background-color: #594d8c;
+      color: #fff;
+      font-weight: 600;
+      border-left: 3px solid #6b5c9b;
+      padding-left: 17px;
+    }
+    .nav-item.active span, .nav-item.active i {
+      color: #fff;
+    }
+
+    /* Mục cha được chọn (Danh sách quản lý) */
+    .nav-item.selected-parent {
+      background-color: var(--sidebar-active-bg);
+      color: #fff;
+    }
+    .nav-item.selected-parent span, .nav-item.selected-parent i {
+      color: #fff;
+    }
+
+    /* Mục con */
+    .sub-item {
+      padding-left: 50px;
+      font-size: 0.85rem;
+    }
+    .sub-item i {
+      font-size: 0.6rem;
+      color: var(--sidebar-item-text);
+    }
+
+    /* Mục đang hiển thị (Quản lý thương hiệu) */
+    .sub-item.current-page {
+      background-color: var(--sidebar-item-hover);
+      color: #fff;
+    }
+    .sub-item.current-page i {
+      color: #fff;
+    }
+
+    /* Icon chấm tròn ẩn khi dùng icon riêng cho trang hiện tại */
+    .sub-item.current-page i.fa-circle {
+      display: none;
+    }
+    /* SỬA CSS: Icon thương hiệu cho trang hiện tại */
+    .sub-item.current-page .fa-tags {
+      display: inline-block !important; /* Đảm bảo hiển thị */
+      font-size: 1rem;
+    }
+
+    /* Ẩn tất cả các icon riêng của các trang khác khi không được chọn */
+    .sub-item a .fa-user-cog,
+    .sub-item a .fa-box-open,
+    .sub-item a .fa-file-invoice {
+      display: none;
+    }
+
+
+    /* ==================================== MAIN CONTENT ==================================== */
+    .main-content {
+      flex-grow: 1;
+      padding: 0 20px 20px;
+      padding-top: 20px;
+    }
+
+    /* Header/Toolbar */
+    .main-header {
+      padding: 15px 0;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #e9ecef;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .search-box {
+      display: flex;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      overflow: hidden;
+      max-width: 450px;
+    }
+
+    .search-box input {
+      padding: 8px 15px;
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 0.9rem;
+    }
+
+    .search-box button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .search-box button:hover {
+      background-color: #0056b3;
+    }
+
+    /* ==================================== BRAND MANAGEMENT SECTION ==================================== */
+    .brand-management h1 {
+      font-size: 1.8rem;
+      color: var(--page-title-color);
+      margin-bottom: 20px;
+      padding-top: 10px;
+    }
+
+    .brand-list-card {
+      background-color: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Header của card danh sách thương hiệu */
+    .card-header {
+      display: flex;                  /* Chia flex container */
+      align-items: center;            /* Căn giữa theo chiều dọc */
+      justify-content: space-between; /* Đẩy h2 trái, nút thêm phải */
+      margin-bottom: 20px;
+      border-bottom: 1px solid #f0f0f0;
+      padding-bottom: 10px;
+    }
+
+    .brand-list-card h2 {
+      font-size: 1.2rem;
+      color: #343a40;
+      margin: 0;
+    }
+
+
+    /* Nút Thêm Thương Hiệu */
+    .btn-add {
+      background-color: #007bff; /* Xanh dương nổi bật */
+      color: #fff;               /* Chữ trắng */
+      border: none;              /* Loại bỏ viền mặc định */
+      padding: 8px 16px;         /* Khoảng cách chữ và viền */
+      font-size: 0.9rem;         /* Kích thước chữ */
+      font-weight: 600;          /* Chữ đậm */
+      border-radius: 5px;        /* Bo góc */
+      cursor: pointer;           /* Con trỏ chuột */
+      display: flex;             /* Cho icon và chữ cùng dòng */
+      align-items: center;
+      gap: 5px;                  /* Khoảng cách giữa icon và chữ */
+      transition: background-color 0.2s, transform 0.2s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    }
+    .btn-add i {
+      font-size: 1rem;           /* Kích thước icon */
+      margin: 0; /* Đảm bảo không có margin dư thừa */
+    }
+
+    /* Hover */
+    .btn-add:hover {
+      background-color: #0056b3; /* Xanh đậm khi hover */
+      transform: translateY(-2px); /* Nhún nhẹ */
+    }
+
+    /* Active (click) */
+    .btn-add:active {
+      background-color: #00408d;
+      transform: translateY(0);
+    }
+
+    /* Bảng */
+    .brand-table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    table thead th {
+      color: #6c757d;
+      font-weight: 600;
+      padding: 12px 15px;
+      border-bottom: 2px solid #e9ecef;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+    }
+
+    table tbody tr {
+      border-bottom: 1px solid #f0f0f0;
+      transition: background-color 0.1s;
+    }
+
+    table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    table tbody td {
+      padding: 12px 15px;
+      color: #495057;
+      vertical-align: middle;
+    }
+
+    /* Trạng thái thương hiệu */
+    .status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-align: center;
+      min-width: 90px;
+      color: var(--status-text-light);
+    }
+
+    .status-active {
+      background-color: var(--status-active-bg);
+    }
+
+    .status-inactive {
+      background-color: var(--status-inactive-bg);
+    }
+
+    /* Phân trang */
+    .pagination {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: 20px;
+      font-size: 0.9rem;
+    }
+    .pagination button {
+      background: #fff;
+      border: 1px solid #ced4da;
+      padding: 5px 10px;
+      margin: 0 5px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.2s;
+    }
+    .pagination button:hover:not(.active) {
+      background-color: #e9ecef;
+    }
+    .pagination button.active {
+      background-color: var(--primary-color);
+      color: #fff;
+      border-color: var(--primary-color);
+    }
+    /* Hành động (Icon) */
+    .action-icon-cell i {
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin: 0 5px;
+    }
+    .action-icon-cell .fa-check-circle { color: var(--status-active-bg); }
+    .action-icon-cell .fa-times-circle { color: var(--status-inactive-bg); }
+    .action-icon-cell .fa-pen { color: #ffc107; } /* Màu vàng cho icon Sửa */
+
+
+    /* ==================================== RESPONSIVE DESIGN ==================================== */
+
+    @media (max-width: 992px) {
+      .sidebar {
+        width: 220px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      /* Ẩn sidebar theo mặc định trên mobile */
+      .sidebar {
+        width: 0;
+        margin-left: -250px;
+        position: absolute;
+        height: 100%;
+        z-index: 1000;
+      }
+
+      /* Hiển thị nút menu toggle */
+      .menu-toggle {
+        display: block;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        color: var(--sidebar-bg);
+        background-color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        font-size: 1.5rem;
+        cursor: pointer;
+        z-index: 1001;
+      }
+
+      /* Xử lý thanh tìm kiếm trên màn hình nhỏ */
+      .main-header {
+        justify-content: center;
+      }
+
+      .search-box {
+        max-width: 100%;
+        width: 100%;
+      }
+    }
+    .logo-img {
+      width: 100%;
+      max-width: 150px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+
+  <aside class="sidebar">
+    <div class="logo-area">
+      <div class="logo-text">
+        <img src="PL.jpg" alt="Logo" class="logo-img">
+      </div>
+    </div>
+
+    <i class="fas fa-bars menu-toggle"></i>
+
+    <div class="components-label">COMPONENTS</div>
+
+    <nav class="sidebar-nav">
+      <ul>
+        <li class="nav-item active">
+          <i class="fas fa-home"></i>
+          <span>Trang Chủ</span>
+        </li>
+        <li class="nav-item selected-parent">
+          <i class="fas fa-list-ul"></i>
+          <span>Danh sách quản lý</span>
+        </li>
+        <li class="sub-item">
+          <a href="/quanlysanpham" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="far fa-circle"></i>
+            <span>Quản lý sản phẩm</span>
+          </a>
+        </li>
+        <li class="sub-item">
+          <a th:href="@{/quanlybanhang}" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="far fa-circle"></i>
+            <span>Quản lý bán hàng</span>
+          </a>
+        </li>
+        <li class="sub-item">
+          <a href="/quanlydanhmuc" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="far fa-circle"></i>
+            <span>Quản lý danh mục</span>
+          </a>
+        </li>
+
+        <li class="sub-item">
+          <a href="/quanlynguoidung" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="far fa-circle"></i>
+            <span>Quản lý người dùng</span>
+          </a>
+        </li>
+
+        <li class="sub-item current-page">
+          <a href="/quanlythuonghieu" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="fas fa-tags"></i> <span>Quản lý thương hiệu</span>
+          </a>
+        </li>
+
+        <li class="sub-item">
+          <a href="/quanlymagiam" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="far fa-circle"></i>
+            <span>Quản lý mã giảm</span>
+          </a>
+        </li>
+
+        <li class="sub-item">
+          <a href="/quanlyhoadon" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+            <i class="far fa-circle"></i>
+            <span>Quản lý hóa đơn</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+
+    <header class="main-header">
+      <div class="search-box">
+        <input type="text" placeholder="Nhập tên thương hiệu...">
+        <button>Tìm kiếm</button>
+      </div>
+    </header>
+
+    <section class="brand-management">
+      <h1>Quản lý thương hiệu sản phẩm</h1>
+
+      <div class="brand-list-card">
+        <div class="card-header">
+          <h2>Danh mục thương hiệu</h2>
+          <button class="btn-add">
+            <i class="fas fa-plus"></i> Thêm thương hiệu
+          </button>
+        </div>
+
+        <div class="brand-table-wrapper">
+          <table>
+            <thead>
+            <tr>
+              <th>TÊN THƯƠNG HIỆU</th>
+              <th>TRẠNG THÁI</th>
+              <th>HÀNH ĐỘNG</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>Nexium</td>
+              <td><span class="status status-active">Kinh doanh</span></td>
+              <td class="action-icon-cell">
+                <i class="fas fa-times-circle" title="Ngừng kinh doanh"></i>
+                <i class="fas fa-pen" title="Sửa"></i>
+              </td>
+            </tr>
+            <tr>
+              <td>Voltaren</td>
+              <td><span class="status status-inactive">Ngừng kinh doanh</span></td>
+              <td class="action-icon-cell">
+                <i class="fas fa-check-circle" title="Kinh doanh"></i>
+                <i class="fas fa-pen" title="Sửa"></i>
+              </td>
+            </tr>
+            <tr>
+              <td>Augmentin</td>
+              <td><span class="status status-active">Kinh doanh</span></td>
+              <td class="action-icon-cell">
+                <i class="fas fa-times-circle" title="Ngừng kinh doanh"></i>
+                <i class="fas fa-pen" title="Sửa"></i>
+              </td>
+            </tr>
+            <tr>
+              <td>Panadol</td>
+              <td><span class="status status-active">Kinh doanh</span></td>
+              <td class="action-icon-cell">
+                <i class="fas fa-times-circle" title="Ngừng kinh doanh"></i>
+                <i class="fas fa-pen" title="Sửa"></i>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <button>Trước</button>
+          <button class="active">1</button>
+          <button>Sau</button>
+        </div>
+
+      </div>
+    </section>
+
+
+  </main>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+
+    if (menuToggle && sidebar) {
+      menuToggle.addEventListener('click', function() {
+        // Đảo ngược trạng thái hiển thị sidebar
+        const isHidden = sidebar.style.marginLeft === '-250px' || sidebar.style.marginLeft === '';
+
+        // Chỉ thay đổi khi màn hình nhỏ
+        if (window.innerWidth <= 768) {
+          sidebar.style.marginLeft = isHidden ? '0' : '-250px';
+        }
+      });
+    }
+  });
+</script>
+
+</body>
+</html>

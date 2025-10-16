@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Danh Mục Sản Phẩm - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* ==================================== CSS BẮT ĐẦU ==================================== */
+
+        /* Thiết lập biến màu sắc */
+        :root {
+            --sidebar-bg: #273041;
+            --sidebar-item-text: #b8c1d5;
+            --sidebar-item-hover: #3c4659;
+            --sidebar-active-bg: #404961; /* Nền mục đang chọn (Danh sách quản lý) */
+            --main-bg: #f4f7f9;
+            --card-bg: #ffffff;
+            --primary-color: #007bff; /* Xanh dương cho nút Tìm kiếm, Lưu, Quay lại */
+            --page-title-color: #5d677a; /* Màu tiêu đề lớn */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--main-bg);
+            display: flex;
+            min-height: 100vh;
+            font-size: 14px;
+        }
+
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+        }
+
+        /* ==================================== SIDEBAR ==================================== */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-item-text);
+            padding: 10px 0;
+            flex-shrink: 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: width 0.3s, margin-left 0.3s;
+        }
+
+        .logo-area {
+            padding: 10px 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Style cho Logo Image */
+        .logo-img {
+            width: 100%;
+            max-width: 150px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .menu-toggle {
+            display: none;
+        }
+
+        .components-label {
+            color: #6c757d;
+            padding: 10px 20px 5px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .nav-item, .sub-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-item i, .sub-item i {
+            margin-right: 15px;
+            width: 15px;
+            text-align: center;
+        }
+
+        .nav-item:hover, .sub-item:hover {
+            background-color: var(--sidebar-item-hover);
+        }
+
+        /* Mục "Trang Chủ" */
+        .nav-item.active {
+            background-color: #594d8c;
+            color: #fff;
+            font-weight: 600;
+            border-left: 3px solid #6b5c9b;
+            padding-left: 17px;
+        }
+
+        /* Mục cha được chọn (Danh sách quản lý) */
+        .nav-item.selected-parent {
+            background-color: var(--sidebar-active-bg);
+            color: #fff;
+        }
+
+        /* Mục con */
+        .sub-item {
+            padding-left: 50px;
+            font-size: 0.85rem;
+        }
+        .sub-item i {
+            font-size: 0.6rem;
+            color: var(--sidebar-item-text);
+        }
+
+        /* Mục đang hiển thị (Quản lý danh mục) */
+        .sub-item.current-page {
+            background-color: var(--sidebar-item-hover);
+            color: #fff;
+        }
+        .sub-item.current-page i {
+            color: #fff;
+        }
+
+        /* Icon chấm tròn ẩn khi dùng icon riêng cho trang hiện tại */
+        .sub-item.current-page i.fa-circle {
+            display: none;
+        }
+        /* SỬA CSS: Icon cho trang hiện tại (fa-sitemap) */
+        .sub-item.current-page .fa-sitemap {
+            display: inline-block !important;
+            font-size: 1rem;
+        }
+
+        /* Ẩn tất cả các icon riêng của các trang khác khi không được chọn */
+        .sub-item a .fa-user-cog,
+        .sub-item a .fa-box-open,
+        .sub-item a .fa-tags,
+        .sub-item a .fa-percentage,
+        .sub-item a .fa-file-invoice {
+            display: none;
+        }
+
+
+        /* ==================================== MAIN CONTENT ==================================== */
+        .main-content {
+            flex-grow: 1;
+            padding: 0 20px 20px;
+            padding-top: 20px;
+        }
+
+        /* Header/Toolbar */
+        .main-header {
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: flex-end; /* Ẩn tìm kiếm nếu cần */
+            height: 0; /* Ẩn hẳn header nếu không có nội dung */
+            border-bottom: none;
+            margin-bottom: 0;
+            padding: 0;
+        }
+
+        /* ==================================== CATEGORY FORM SECTION ==================================== */
+        .category-management h1 {
+            font-size: 1.8rem;
+            color: var(--page-title-color);
+            margin-bottom: 10px;
+            padding-top: 10px;
+        }
+
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        .breadcrumb a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .breadcrumb span {
+            margin: 0 5px;
+        }
+
+        .form-card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            color: #343a40;
+            margin: 0;
+        }
+
+        /* Nút Quay lại (Back button) */
+        .btn-back {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background-color 0.2s;
+        }
+        .btn-back i {
+            font-size: 1rem;
+            margin: 0;
+        }
+        .btn-back:hover {
+            background-color: #0056b3;
+        }
+
+        /* Form Layout */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        /* Nút Lưu (Save button) */
+        .btn-save {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px; /* Thêm khoảng cách nếu cần */
+        }
+        .btn-save:hover {
+            background-color: #0056b3;
+        }
+
+        /* Input field bị disable/readonly (cho trường mô tả) */
+        .form-control.disabled-field {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+
+
+        /* ==================================== RESPONSIVE DESIGN ==================================== */
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 220px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Ẩn sidebar theo mặc định trên mobile */
+            .sidebar {
+                width: 0;
+                margin-left: -250px;
+                position: absolute;
+                height: 100%;
+                z-index: 1000;
+            }
+
+            /* Hiển thị nút menu toggle */
+            .menu-toggle {
+                display: block;
+                position: fixed;
+                top: 15px;
+                left: 15px;
+                color: var(--sidebar-bg);
+                background-color: #fff;
+                padding: 5px 10px;
+                border-radius: 5px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                font-size: 1.5rem;
+                cursor: pointer;
+                z-index: 1001;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+
+    <aside class="sidebar">
+        <div class="logo-area">
+            <div class="logo-text">
+                <img src="PL.jpg" alt="Logo" class="logo-img">
+            </div>
+        </div>
+
+        <i class="fas fa-bars menu-toggle"></i>
+
+        <div class="components-label">COMPONENTS</div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Trang Chủ</span>
+                </li>
+                <li class="nav-item selected-parent">
+                    <i class="fas fa-list-ul"></i>
+                    <span>Danh sách quản lý</span>
+                </li>
+
+                <li class="sub-item">
+                    <a href="/quanlysanpham" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+                        <i class="far fa-circle"></i>
+                        <span>Quản lý sản phẩm</span>
+                    </a>
+                </li>
+                <li class="sub-item">
+                    <a th:href="@{/quanlybanhang}" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+                        <i class="far fa-circle"></i>
+                        <span>Quản lý bán hàng</span>
+                    </a>
+                </li>
+                <li class="sub-item current-page">
+                    <a href="/quanlydanhmuc" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+                        <i class="fas fa-sitemap"></i> <span>Quản lý danh mục</span>
+                    </a>
+                </li>
+
+                <li class="sub-item">
+                    <a href="/quanlynguoidung" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+                        <i class="far fa-circle"></i>
+                        <span>Quản lý người dùng</span>
+                    </a>
+                </li>
+
+                <li class="sub-item">
+                    <a href="/quanlythuonghieu" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+                        <i class="far fa-circle"></i>
+                        <span>Quản lý thương hiệu</span>
+                    </a>
+                </li>
+
+                <li class="sub-item">
+                    <a href="/quanlymagiam" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+                        <i class="far fa-circle"></i>
+                        <span>Quản lý mã giảm</span>
+                    </a>
+                </li>
+
+                <li class="sub-item">
+                    <a href="/quanlyhoadon" style="text-decoration: none; color: inherit; display: flex; align-items: center; width: 100%;">
+                        <i class="far fa-circle"></i>
+                        <span>Quản lý hóa đơn</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="main-header">
+        </header>
+
+        <section class="category-management">
+            <h1>Quản lý danh mục sản phẩm</h1>
+            <div class="form-card">
+                <div class="card-header">
+                    <h2>Thêm danh mục mới</h2>
+                    <button class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </button>
+                </div>
+
+                <form>
+                    <div class="form-group">
+                        <label for="category-name">Tên danh mục</label>
+                        <input type="text" id="category-name" class="form-control" value="Trẻ em" placeholder="Nhập tên danh mục...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category-description">Mô tả</label>
+                        <input type="text" id="category-description" class="form-control disabled-field" value="Không có" readonly>
+                    </div>
+
+                    <button type="submit" class="btn-save">Lưu</button>
+                </form>
+
+            </div>
+        </section>
+
+    </main>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.querySelector('.menu-toggle');
+        const sidebar = document.querySelector('.sidebar');
+
+        if (menuToggle && sidebar) {
+            menuToggle.addEventListener('click', function() {
+                // Đảo ngược trạng thái hiển thị sidebar
+                const isHidden = sidebar.style.marginLeft === '-250px' || sidebar.style.marginLeft === '';
+
+                // Chỉ thay đổi khi màn hình nhỏ
+                if (window.innerWidth <= 768) {
+                    sidebar.style.marginLeft = isHidden ? '0' : '-250px';
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

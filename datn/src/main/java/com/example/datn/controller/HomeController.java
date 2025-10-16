@@ -49,10 +49,6 @@ public class HomeController {
     public String giohang() {
         return "giohang"; // trả về file login.html trong thư mục templates
     }
-    @GetMapping("/admin")
-    public String admin() {
-        return "admin"; // trả về file login.html trong thư mục templates
-    }
     @GetMapping("/quanlynguoidung")
     public String quanlynguoidung() {
         return "quanlynguoidung"; // trả về file login.html trong thư mục templates

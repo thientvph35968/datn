@@ -51,18 +51,19 @@ public class TestController {
                 adminRole = vaiTroRepository.save(adminRole);
             }
 
-            // Tạo user test
-            User testUser = new User();
-            testUser.setMaNhanVien("NV001");
-            testUser.setTenNhanVien("Admin Test");
-            testUser.setGioiTinh("Nam");
-            testUser.setTaiKhoan("admin");
-            testUser.setMatKhau("123456"); // Mật khẩu không mã hóa
-            testUser.setSdt("0123456789");
-            testUser.setEmail("admin@test.com");
-            testUser.setDiaChi("Test Address");
-            testUser.setTrangThai(true);
-            testUser.setVaiTro(adminRole);
+            // Tạo user test sử dụng constructor
+            User testUser = User.builder()
+                    .maNhanVien("NV001")
+                    .tenNhanVien("Admin Test")
+                    .gioiTinh("Nam")
+                    .taiKhoan("admin")
+                    .matKhau("123456")
+                    .sdt("0123456789")
+                    .email("admin@test.com")
+                    .diaChi("Test Address")
+                    .trangThai(true)
+                    .vaiTro(adminRole)
+                    .build();
 
             userRepository.save(testUser);
             return "Tạo user test thành công! Username: admin, Password: 123456";

@@ -42,10 +42,12 @@ public class TestController {
             if (existingRole.isPresent()) {
                 adminRole = existingRole.get();
             } else {
-                adminRole = new VaiTro();
-                adminRole.setMaVaiTro("ADMIN");
-                adminRole.setTenVaiTro("ADMIN");
-                adminRole.setTrangThai(true);
+                // Sử dụng constructor thay vì setter
+                adminRole = VaiTro.builder()
+                        .maVaiTro("ADMIN")
+                        .tenVaiTro("ADMIN")
+                        .trangThai(true)
+                        .build();
                 adminRole = vaiTroRepository.save(adminRole);
             }
 

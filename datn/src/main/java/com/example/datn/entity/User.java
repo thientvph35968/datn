@@ -141,4 +141,9 @@ public class User {
     public void setTrangThai(Boolean trangThai) {
         this.trangThai = trangThai;
     }
+    
+    // Thêm setId method để tránh lỗi
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

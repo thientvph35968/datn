@@ -26,6 +26,8 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
             response.sendRedirect("/admin");
         } else if (roles.contains("ROLE_EMPLOYEE")) {
             response.sendRedirect("/");
+        } else if (roles.contains("ROLE_USER")) {
+            response.sendRedirect("/");
         } else {
             // Trường hợp lỗi (không có role, mặc dù không nên xảy ra)
             response.sendRedirect("/login?error=true");

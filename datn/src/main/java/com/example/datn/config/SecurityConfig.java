@@ -4,15 +4,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder; // 👈 THÊM DÒNG NÀY
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration
+//@Configuration
 public class SecurityConfig {
 
     @Autowired
     private CustomSuccessHandler customSuccessHandler;
+    
+    @Autowired
+    private com.example.datn.security.UserDetailsServiceImpl userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -20,7 +24,7 @@ public class SecurityConfig {
                 // 1. Cấu hình phân quyền
                 .authorizeHttpRequests(auth -> auth
                         // Cho phép truy cập công khai
-                        .requestMatchers("/login", "/dangki", "/quenmatkhau", "/css/**", "/js/**", "/images/**", "/error").permitAll()
+                        .requestMatchers("/login", "/dangki", "/quenmatkhau", "/css/**", "/js/**", "/images/**", "/error", "/test/**", "/debug/**").permitAll()
                         .requestMatchers("/", "/home").permitAll()
                         // Phân quyền theo Role
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -31,6 +35,8 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/do-login")
+                        .usernameParameter("username")
+                        .passwordParameter("password")
                         .successHandler(customSuccessHandler)
                         .failureUrl("/login?error=true")
                         .permitAll()
@@ -41,16 +47,17 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
                 )
-                // 4. 🔥 Tắt CSRF (Giải quyết lỗi 403 Forbidden/Login không hoạt động)
+                // 4. Cấu hình UserDetailsService
+                .userDetailsService(userDetailsService)
+                // 5. Tắt CSRF (tạm thời để test)
                 .csrf(csrf -> csrf.disable());
 
         return http.build();
     }
 
-    // 5. ⚠️ Dùng NoOpPasswordEncoder để hỗ trợ mật khẩu chưa mã hóa (123456)
+    // 6. Dùng NoOpPasswordEncoder để hỗ trợ mật khẩu chưa mã hóa
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // CẢNH BÁO: DÙNG CHO MỤC ĐÍCH TEST. NÊN DÙNG BCryptPasswordEncoder KHI TRIỂN KHAI THẬT
         return NoOpPasswordEncoder.getInstance();
     }
 }

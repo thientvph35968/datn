@@ -30,7 +30,21 @@ public class VaiTro {
     public String toString() {
         return this.tenVaiTro;
     }
-    public String getTenVaiTro() {
-        return tenVaiTro;
+    
+    // Thêm các setter methods thủ công để tránh lỗi Lombok
+    public void setMaVaiTro(String maVaiTro) {
+        this.maVaiTro = maVaiTro;
+    }
+    
+    public void setTenVaiTro(String tenVaiTro) {
+        this.tenVaiTro = tenVaiTro;
+    }
+    
+    public void setTrangThai(Boolean trangThai) {
+        this.trangThai = trangThai;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
     }
 }

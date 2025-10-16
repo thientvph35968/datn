@@ -9,14 +9,14 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration
+//@Configuration
 public class SecurityConfig {
 
     @Autowired
     private CustomSuccessHandler customSuccessHandler;
     
     @Autowired
-    private UserDetailsService userDetailsService;
+    private com.example.datn.security.UserDetailsServiceImpl userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

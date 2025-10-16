@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder; // 👈 THÊM DÒNG NÀY
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -16,7 +16,7 @@ public class SecurityConfig {
     private CustomSuccessHandler customSuccessHandler;
     
     @Autowired
-    private com.example.datn.security.UserDetailsServiceImpl userDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -49,17 +49,15 @@ public class SecurityConfig {
                 )
                 // 4. Cấu hình UserDetailsService
                 .userDetailsService(userDetailsService)
-                // 5. 🔥 Tắt CSRF (Giải quyết lỗi 403 Forbidden/Login không hoạt động)
+                // 5. Tắt CSRF (tạm thời để test)
                 .csrf(csrf -> csrf.disable());
 
         return http.build();
     }
 
-    // 5. ⚠️ Dùng NoOpPasswordEncoder để hỗ trợ mật khẩu chưa mã hóa (123456)
+    // 6. Dùng NoOpPasswordEncoder để hỗ trợ mật khẩu chưa mã hóa
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // CẢNH BÁO: DÙNG CHO MỤC ĐÍCH TEST. NÊN DÙNG BCryptPasswordEncoder KHI TRIỂN KHAI THẬT
         return NoOpPasswordEncoder.getInstance();
     }
-    
 }

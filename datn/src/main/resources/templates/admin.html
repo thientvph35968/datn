@@ -436,10 +436,51 @@
     </header>
 
     <section class="invoice-management">
-      <h1>Quản lý hóa đơn</h1>
+      <h1>Admin Dashboard - Debug Users</h1>
 
       <div class="invoice-list-card">
-        <h2>Danh sách hóa đơn</h2>
+        <h2>Danh sách Users trong Database</h2>
+        
+        <!-- Form tạo admin mẫu -->
+        <div style="background: #f8f9fa; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+          <h3>Tạo Admin Test</h3>
+          <form th:action="@{/create-admin}" method="post" style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" name="taiKhoan" placeholder="Tài khoản" value="admin" required>
+            <input type="text" name="matKhau" placeholder="Mật khẩu" value="123456" required>
+            <input type="text" name="tenNhanVien" placeholder="Tên nhân viên" value="Admin User" required>
+            <button type="submit" style="background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer;">Tạo Admin</button>
+          </form>
+        </div>
+
+        <!-- Hiển thị danh sách users -->
+        <div th:if="${users != null and !users.empty}">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tài khoản</th>
+                <th>Mật khẩu</th>
+                <th>Tên nhân viên</th>
+                <th>Trạng thái</th>
+                <th>Vai trò</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.taiKhoan}"></td>
+                <td th:text="${user.matKhau}"></td>
+                <td th:text="${user.tenNhanVien}"></td>
+                <td th:text="${user.trangThai}"></td>
+                <td th:text="${user.vaiTro != null ? user.vaiTro.tenVaiTro : 'Chưa có vai trò'}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div th:if="${users == null or users.empty}" style="text-align: center; padding: 20px; color: #6c757d;">
+          Không có user nào trong database
+        </div>
 
         <div class="invoice-table-wrapper">
           <table>

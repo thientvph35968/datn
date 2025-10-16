@@ -24,7 +24,7 @@ public class SecurityConfig {
                 // 1. Cấu hình phân quyền
                 .authorizeHttpRequests(auth -> auth
                         // Cho phép truy cập công khai
-                        .requestMatchers("/login", "/dangki", "/quenmatkhau", "/css/**", "/js/**", "/images/**", "/error", "/test/**").permitAll()
+                        .requestMatchers("/login", "/dangki", "/quenmatkhau", "/css/**", "/js/**", "/images/**", "/error", "/test/**", "/debug/**").permitAll()
                         .requestMatchers("/", "/home").permitAll()
                         // Phân quyền theo Role
                         .requestMatchers("/admin/**").hasRole("ADMIN")

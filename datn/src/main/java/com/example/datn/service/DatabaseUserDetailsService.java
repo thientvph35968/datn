@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-@Service
+// @Service
 public class DatabaseUserDetailsService implements UserDetailsService {
 
     @Autowired
